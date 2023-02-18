@@ -1,14 +1,11 @@
 const webpack = require('webpack');
 const path = require('path');
 const autoprefixer = require('autoprefixer');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-const UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
+//const UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
 
-const extractCss = new ExtractTextPlugin('[name].css', {
-  disable: false,
-  allChunks: true
-});
+const extractCss = new MiniCssExtractPlugin();
 
 // a plugin to set the environment
 const defineProperty = new webpack.DefinePlugin({
@@ -54,17 +51,17 @@ module.exports = {
       test: function (filePath) {
         return (/antd\/.*\.less$/.test(filePath) || /\.global\.less$/.test(filePath));
       },
-      use: ExtractTextPlugin.extract({use: 'css-loader!postcss-loader!less-loader'})
+      use: [MiniCssExtractPlugin.loader, 'css-loader!postcss-loader!less-loader'],
     },
     {
       test: function (filePath) {
         return (/\.less$/.test(filePath) && !/\.global\.less$/.test(filePath) && !/antd\/.*\.less$/.test(filePath));
       },
-      use: ExtractTextPlugin.extract({use: 'css-loader?modules&localIdentName=[local]___[hash:base64:5]!postcss-loader!less-loader'})
+      use: [MiniCssExtractPlugin.loader, 'css-loader?modules&localIdentName=[local]___[hash:base64:5]!postcss-loader!less-loader'],
     },
     {
       test: /\.css$/,
-      use: ExtractTextPlugin.extract({use:'css-loader'})
+      use:[MiniCssExtractPlugin.loader, 'css-loader'],
     },
     {
       test: /\.png(\?v=\d+\.\d+\.\d+)?$/,
@@ -106,7 +103,7 @@ module.exports = {
   plugins: [
     extractCss,
     defineProperty,
-    new UglifyJsPlugin()
+    //new UglifyJsPlugin()
   ],
   stats: {
     children: false
